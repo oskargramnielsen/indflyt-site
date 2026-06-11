@@ -13,6 +13,8 @@ the URLs match `AppConfig.swift` in the app repo (`/privacy/`, `/support/`).
 | `/support/` | Support page (ASC support URL) |
 | `/t/a/` | Fake door, 99 kr (test I-A2) — `noindex` |
 | `/t/b/` | Fake door, 49 kr variant — `noindex` |
+| `/t/guide/a/` | Hostbook (F1 host manual) fake door, $19 one-time (test F1-A2) — `noindex`, English |
+| `/t/guide/b/` | Hostbook fake door, $29 variant — `noindex`, English |
 
 ## Publish (one evening)
 
@@ -31,6 +33,18 @@ Measured event = click on the CTA ("pay-click"). **Green: ≥8 % visitors→pay-
 price. Cloudflare Analytics gives visitors per path; Tally gives form opens + submissions per
 price. Run ~10 days off one honest post in a large lejer-Facebook-group (read group rules,
 post as a person). Record the result in the app repo's DECISIONS.md — it sets launch pricing.
+
+## Test F1-A2 readout (Hostbook — the host-manual builder)
+
+Context (verified 11 Jun 2026): Hostfully's **first guidebook is now free forever** (then
+$9.99+/mo), Touch Stay ≈ $99+/yr with no free tier. The fake door therefore tests the
+*narrowed* wedge: will a host pay **once** for a print-beautiful PDF book + hosted page,
+against a free SaaS incumbent? Variants $19 (`/t/guide/a/`) vs $29 (`/t/guide/b/`).
+Same placeholders as I-A2 (`REPLACE` Tally id — one form, hidden `price` field; `CF_TOKEN_HER`).
+Traffic: one honest post in an Airbnb-host community (r/airbnb_hosts-class — read rules,
+post as a person), ~10 days. **Green: ≥8 % visitor→pay-click on either price.** Note Etsy
+sells *static* welcome-book templates at $10–30 — the door's price points bracket that.
+"Hostbook" is a working name; check availability before any launch use.
 
 ## Design
 
