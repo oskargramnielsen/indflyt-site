@@ -1,0 +1,282 @@
+/* ————————————————————————————————————————————————
+   Indflyt studio site — "dokument" aesthetic
+   Paper ground, ink blue, stamp red, hairline rules.
+   No build step. Mobile-first.
+   ———————————————————————————————————————————————— */
+
+:root {
+  --paper: #f5f1e8;
+  --paper-deep: #ece5d3;
+  --ink: #1b2a41;
+  --blue: #1d3557;
+  --stamp: #c2452d;
+  --hairline: rgba(27, 42, 65, 0.22);
+  --faint: rgba(27, 42, 65, 0.55);
+  --ghost: rgba(27, 42, 65, 0.10);
+  --serif: "Fraunces", "Georgia", serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  --mono: "IBM Plex Mono", "Courier New", monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  /* faint paper grain */
+  background-image: radial-gradient(rgba(27, 42, 65, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+::selection { background: var(--blue); color: var(--paper); }
+
+.shell { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+
+/* —— top strip: the positioning line, set like a file header —— */
+.filehead {
+  border-bottom: 1px solid var(--hairline);
+  padding: 10px 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.filehead .right { text-overflow: ellipsis; overflow: hidden; }
+
+/* —— masthead —— */
+.masthead { padding: 56px 0 8px; }
+.masthead .brand {
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: clamp(44px, 11vw, 76px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.masthead .brand a { color: inherit; text-decoration: none; }
+.masthead .tagline {
+  margin-top: 14px;
+  font-size: clamp(18px, 4.6vw, 24px);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--blue);
+}
+
+/* —— hero claim —— */
+.hero { padding: 40px 0 12px; }
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: clamp(34px, 8.4vw, 58px);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--stamp);
+}
+.hero .sub {
+  margin-top: 18px;
+  font-size: 18px;
+  max-width: 54ch;
+  color: var(--ink);
+}
+
+/* —— the stamp —— */
+.stamp {
+  display: inline-block;
+  margin: 26px 0 4px;
+  padding: 8px 14px;
+  border: 2px solid var(--stamp);
+  border-radius: 3px;
+  color: var(--stamp);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-2.5deg);
+  -webkit-mask-image: radial-gradient(rgba(0,0,0,0.96) 70%, rgba(0,0,0,0.75));
+          mask-image: radial-gradient(rgba(0,0,0,0.96) 70%, rgba(0,0,0,0.75));
+}
+
+/* —— hash divider: evidence as ornament —— */
+.hashline {
+  margin: 44px 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ghost);
+  word-break: break-all;
+  user-select: none;
+  line-height: 1.4;
+}
+
+/* —— checklist cards —— */
+.checks { display: grid; gap: 12px; padding: 8px 0; }
+.check {
+  border: 1px dashed var(--hairline);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.check .tick {
+  width: 24px; height: 24px;
+  border: 1.5px solid var(--blue);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.check h3 { font-family: var(--serif); font-weight: 600; font-size: 19px; }
+.check p { font-size: 15.5px; color: var(--faint); margin-top: 2px; }
+
+/* —— section heading, report style —— */
+.secthead {
+  margin: 52px 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.secthead h2 { font-family: var(--serif); font-weight: 900; font-size: 26px; }
+.secthead .no {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--faint);
+}
+
+/* —— CTA button: a receipt of intent —— */
+.cta {
+  display: block;
+  width: 100%;
+  margin: 30px 0 10px;
+  padding: 18px 22px;
+  background: var(--blue);
+  color: var(--paper);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--stamp);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.cta:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--stamp); }
+.cta .price { font-family: var(--mono); font-size: 15px; opacity: 0.85; display: block; margin-top: 2px; letter-spacing: 0.08em; }
+
+.cta-note {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* —— app cards on the studio index —— */
+.appcard {
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 22px;
+  margin: 14px 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.12s ease;
+}
+.appcard:hover { transform: translateY(-2px); }
+.appcard .kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stamp);
+}
+.appcard h3 { font-family: var(--serif); font-weight: 900; font-size: 28px; margin: 4px 0 6px; }
+.appcard p { font-size: 15.5px; color: var(--faint); }
+.appcard.dimmed { opacity: 0.62; }
+
+/* —— phone mockup frame —— */
+.phones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 36px 0 8px;
+}
+.phone {
+  border: 1.5px solid var(--ink);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--ghost);
+}
+.phone svg { display: block; width: 100%; height: auto; }
+.phone-caption {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  text-align: center;
+  margin-top: 8px;
+}
+@media (max-width: 560px) {
+  .phones { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+}
+
+/* —— prose pages (privacy, support) —— */
+.prose { padding: 8px 0 40px; }
+.prose h2 { font-family: var(--serif); font-weight: 900; font-size: 24px; margin: 36px 0 10px; }
+.prose p, .prose li { margin: 10px 0; max-width: 64ch; }
+.prose ul { padding-left: 22px; }
+.prose strong { color: var(--blue); }
+.prose a { color: var(--blue); text-underline-offset: 3px; }
+
+/* —— footer —— */
+.colophon {
+  margin-top: 72px;
+  border-top: 1px solid var(--hairline);
+  padding: 22px 0 48px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+.colophon a { color: inherit; text-underline-offset: 3px; }
+
+/* —— page-load reveal —— */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .reveal.d1 { animation-delay: 0.08s; }
+  .reveal.d2 { animation-delay: 0.16s; }
+  .reveal.d3 { animation-delay: 0.26s; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+}
