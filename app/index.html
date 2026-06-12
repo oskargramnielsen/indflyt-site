@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indflyt — dokumentér din indflytning (gratis webapp)</title>
+<meta name="description" content="Guidet gennemgang af dit nye lejemål: dansk tjekliste rum for rum, fotos med fingeraftryk, målerstande — og én samlet rapport med fejl- og mangelliste til din udlejer.">
+<link rel="canonical" href="https://oskargramnielsen.github.io/indflyt-site/app/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,900;1,400;1,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .topnav { display:flex; align-items:center; justify-content:space-between; padding:14px 0; }
+  .topnav .brand { font-family:var(--serif); font-weight:900; font-size:26px; }
+  .topnav .brand a { color:inherit; text-decoration:none; }
+  .topnav button { background:none; border:none; color:var(--blue); font-family:var(--mono); font-size:12px; letter-spacing:.08em; cursor:pointer; }
+  .card { border:1px solid var(--hairline); border-radius:4px; background:rgba(255,255,255,.55); padding:18px; margin:12px 0; }
+  .card h3 { font-family:var(--serif); font-size:19px; }
+  label.f { display:block; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin:14px 0 4px; }
+  input, select, textarea { width:100%; padding:11px 12px; font-size:16px; font-family:var(--sans); border:1.5px solid var(--hairline); border-radius:4px; background:#fff; color:var(--ink); }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--blue); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn { display:block; width:100%; margin-top:14px; padding:14px; font-size:17px; font-weight:600; font-family:var(--serif); background:var(--blue); color:var(--paper); border:none; border-radius:4px; cursor:pointer; box-shadow:3px 3px 0 var(--stamp); text-align:center; text-decoration:none; }
+  .btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--stamp); }
+  .btn.sec { background:none; color:var(--blue); border:1.5px dashed var(--blue); box-shadow:none; }
+  .btn[disabled] { opacity:.5; cursor:wait; }
+  .roomgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .roomcard { border:1px solid var(--hairline); border-radius:4px; background:#fff; padding:14px; cursor:pointer; }
+  .roomcard h4 { font-family:var(--serif); font-size:17px; margin:6px 0 2px; }
+  .roomcard .sub { font-size:12.5px; color:var(--faint); }
+  .roomcard .ring { float:right; font-family:var(--mono); font-size:11px; color:var(--blue); }
+  .item { border-bottom:1px solid var(--ghost); padding:10px 0; }
+  .item .head { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .item .head span { font-size:16px; }
+  .cond { min-width:44px; height:36px; font-size:20px; background:none; border:none; cursor:pointer; }
+  .defectbox { border:1px dashed var(--hairline); border-radius:4px; padding:10px; margin-top:8px; background:rgba(255,255,255,.6); }
+  .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .thumbs .t { position:relative; }
+  .thumbs img { width:64px; height:64px; object-fit:cover; border-radius:6px; display:block; }
+  .thumbs .x { position:absolute; top:-6px; right:-6px; background:var(--stamp); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:12px; line-height:1; cursor:pointer; }
+  .addphoto { display:inline-block; margin-top:8px; font-size:14px; color:var(--blue); cursor:pointer; font-family:var(--mono); }
+  .addphoto input { display:none; }
+  .small { font-size:13px; color:var(--faint); }
+  .deadline { border-left:4px solid var(--stamp); padding:10px 14px; background:rgba(255,255,255,.6); margin:14px 0; }
+  .deadline strong { font-family:var(--serif); font-size:18px; }
+  .crumb { font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--faint); margin:10px 0; text-transform:uppercase; }
+  .crumb a { color:var(--blue); cursor:pointer; text-decoration:underline; }
+  #doc { display:none; }
+  @media print {
+    body > .shell { display:none !important; }
+    #doc { display:block; font-family:Georgia,serif; color:#111; }
+    #doc h1 { font-size:20pt; }
+    #doc h2 { font-size:14pt; border-bottom:1.5pt solid #111; padding-bottom:3pt; margin:18pt 0 8pt; page-break-after:avoid; }
+    #doc .meta div { display:flex; justify-content:space-between; padding:2pt 0; font-size:11pt; border-bottom:.5pt solid #ddd; }
+    #doc table { width:100%; border-collapse:collapse; font-size:10pt; }
+    #doc td { padding:3pt 0; border-bottom:.5pt solid #eee; }
+    #doc td:last-child { text-align:right; color:#444; }
+    #doc .ph { display:inline-block; width:47%; margin:1.5%; vertical-align:top; page-break-inside:avoid; }
+    #doc .ph img { width:100%; border:.5pt solid #999; }
+    #doc .ph .cap { font-size:8pt; color:#555; }
+    #doc ol { margin:8pt 0 0 18pt; } #doc li { font-size:10.5pt; margin-bottom:6pt; }
+    #doc .mono { font-family:'Courier New',monospace; font-size:7pt; color:#555; word-break:break-all; }
+    #doc .disc { margin-top:16pt; border-top:.5pt solid #999; padding-top:6pt; font-size:8.5pt; font-style:italic; color:#555; }
+    #doc .pagebreak { page-break-before:always; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="filehead">
+    <span>INDFLYT · WEBAPP</span>
+    <span class="right">DIN EGEN DOKUMENTATION — UAFHÆNGIG AF UDLEJER</span>
+  </div>
+  <nav class="topnav">
+    <div class="brand"><a href="../">Indflyt</a></div>
+    <button id="resetbtn" type="button" title="Slet alt og start forfra">START FORFRA</button>
+  </nav>
+  <main id="view"></main>
+  <footer class="colophon">
+    <a href="../fejl-og-mangelliste/">Kun listen? Hurtig-skabelon</a>
+    <a href="../privacy/">Privatliv</a>
+    <a href="../support/">Support</a>
+    <span>Alt gemmes kun i din browser. Indflyt ser ingenting.</span>
+  </footer>
+</div>
+<div id="doc"></div>
+<script src="app.js"></script>
+</body>
+</html>

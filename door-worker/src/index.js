@@ -105,6 +105,39 @@ export default {
       );
     }
 
+    // Bevis-anker: logs a report's manifest hash with SERVER time, first-write-wins,
+    // so a report cannot be backdated. Body = raw 64-hex hash (text/plain, no preflight).
+    if (url.pathname === "/anchor" && request.method === "POST") {
+      const hash = (await request.text()).trim().toLowerCase();
+      if (!/^[0-9a-f]{64}$/.test(hash)) {
+        return new Response("bad hash", { status: 400, headers: { "access-control-allow-origin": "*" } });
+      }
+      const key = `anchor:${hash}`;
+      let record = await env.DOOR.get(key, "json");
+      if (!record) {
+        record = { hash, anchoredAt: new Date().toISOString() };
+        await env.DOOR.put(key, JSON.stringify(record));
+      }
+      return Response.json(record, { headers: { "access-control-allow-origin": "*" } });
+    }
+
+    // Public verification page printed in the report footer.
+    if (url.pathname.startsWith("/anchor/")) {
+      const hash = url.pathname.slice("/anchor/".length).toLowerCase();
+      const record = /^[0-9a-f]{64}$/.test(hash) ? await env.DOOR.get(`anchor:${hash}`, "json") : null;
+      if (!record) {
+        return page("Ikke fundet", `<div class="mono">INDFLYT · BEVIS-ANKER</div>
+          <h1>Hash <em>ikke registreret</em></h1>
+          <p>Denne hash er ikke forankret hos Indflyt. Tjek, at hele værdien er kopieret korrekt.</p>`);
+      }
+      const date = new Date(record.anchoredAt).toLocaleString("da-DK", { dateStyle: "long", timeStyle: "short" });
+      return page("Bevis-anker verificeret", `<div class="mono">INDFLYT · BEVIS-ANKER</div>
+        <h1>Forankret <em>${date}</em></h1>
+        <p>Fotosættet med nedenstående manifest-hash blev registreret hos Indflyt på ovenstående
+        tidspunkt (servertid). Rapporten kan altså ikke være lavet senere end dette tidspunkt.</p>
+        <p class="fine" style="word-break:break-all">SHA-256: ${record.hash}</p>`);
+    }
+
     if (url.pathname === "/stats") {
       if (url.searchParams.get("key") !== env.STATS_KEY) {
         return new Response("forbidden", { status: 403 });
