@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fejl- og mangelliste — gratis skabelon og generator (lejebolig) | Indflyt</title>
+<meta name="description" content="Lav din fejl- og mangelliste online på 5 minutter — gratis. Udfyld rum for rum, få et færdigt dokument til print eller PDF, og send det til din udlejer inden 14-dages fristen.">
+<link rel="canonical" href="https://oskargramnielsen.github.io/indflyt-site/fejl-og-mangelliste/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,900;1,400;1,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  /* generator form */
+  .gen { border:1px solid var(--hairline); border-radius:4px; background:rgba(255,255,255,.55); padding:20px; margin:20px 0; }
+  .gen label { display:block; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin:14px 0 4px; }
+  .gen input, .gen select, .gen textarea { width:100%; padding:11px 12px; font-size:16px; font-family:var(--sans); border:1.5px solid var(--hairline); border-radius:4px; background:#fff; color:var(--ink); }
+  .gen input:focus, .gen select:focus, .gen textarea:focus { outline:2px solid var(--blue); }
+  .row2 { display:grid; grid-template-columns:1fr 2fr; gap:10px; }
+  .defect { border:1px dashed var(--hairline); border-radius:4px; padding:14px; margin-top:14px; position:relative; background:#fff; }
+  .defect .rm { position:absolute; top:8px; right:8px; background:none; border:none; color:var(--stamp); font-size:18px; cursor:pointer; padding:4px 8px; }
+  .addbtn { margin-top:14px; width:100%; padding:12px; font-size:16px; font-family:var(--serif); background:none; border:1.5px dashed var(--blue); color:var(--blue); border-radius:4px; cursor:pointer; }
+  .genbtn { margin-top:18px; width:100%; padding:16px; font-size:19px; font-weight:600; font-family:var(--serif); background:var(--blue); color:var(--paper); border:none; border-radius:4px; cursor:pointer; box-shadow:4px 4px 0 var(--stamp); }
+  .genbtn:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--stamp); }
+  .upsell { border:2px solid var(--blue); border-radius:4px; padding:20px; margin:36px 0; background:rgba(255,255,255,.55); }
+  .upsell h3 { font-family:var(--serif); font-size:22px; margin-bottom:8px; }
+  .upsell a.go { display:inline-block; margin-top:12px; padding:12px 18px; background:var(--blue); color:var(--paper); border-radius:4px; text-decoration:none; font-family:var(--serif); font-weight:600; box-shadow:3px 3px 0 var(--stamp); }
+  /* the printable document */
+  #doc { display:none; }
+  @media print {
+    body > .shell { display:none; }
+    #doc { display:block; font-family:Georgia,serif; color:#111; }
+    #doc h1 { font-size:22pt; letter-spacing:.02em; }
+    #doc .meta { margin:14pt 0; border-top:2px solid #111; border-bottom:1px solid #999; padding:8pt 0; }
+    #doc .meta div { display:flex; justify-content:space-between; padding:2pt 0; font-size:11pt; }
+    #doc ol { margin:10pt 0 0 18pt; }
+    #doc li { margin-bottom:8pt; font-size:11pt; }
+    #doc li .sev { font-style:italic; color:#555; }
+    #doc .sig { margin-top:36pt; display:flex; gap:40pt; }
+    #doc .sig div { flex:1; border-top:1px solid #111; padding-top:4pt; font-size:10pt; }
+    #doc .foot { margin-top:28pt; font-size:8.5pt; color:#666; border-top:.5pt solid #999; padding-top:6pt; }
+  }
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Hvad er fristen for at sende en fejl- og mangelliste?","acceptedAnswer":{"@type":"Answer","text":"Som lejer skal du melde fejl og mangler til udlejeren senest 2 uger (14 dage) efter lejeforholdets begyndelse, jf. lejelovens § 91. Ellers kan du som udgangspunkt ikke påberåbe dig dem senere."}},
+ {"@type":"Question","name":"Skal min udlejer holde indflytningssyn?","acceptedAnswer":{"@type":"Answer","text":"Kun udlejere, der udlejer mere end én beboelseslejlighed, har pligt til at holde indflytningssyn og udlevere en indflytningsrapport (lejelovens § 90). Lejer du af en privat udlejer med ét lejemål, er der typisk intet syn — og din egen dokumentation er det eneste, der findes."}},
+ {"@type":"Question","name":"Hvordan dokumenterer jeg bedst lejlighedens stand?","acceptedAnswer":{"@type":"Answer","text":"Tag mange billeder i hvert rum — oversigt og nærbilleder af hver fejl — på selve overtagelsesdagen, og send din fejl- og mangelliste skriftligt til udlejer inden fristen, så afsendelsen kan dokumenteres. Huslejenævnets behandling er skriftlig, og billeder er den primære dokumentation."}}
+]}
+</script>
+<!-- Cloudflare Web Analytics placeholder (optional):
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "CF_TOKEN_HER"}'></script>
+-->
+</head>
+<body>
+<div class="shell">
+
+  <div class="filehead">
+    <span>INDFLYT · GRATIS VÆRKTØJ</span>
+    <span class="right">FEJL- OG MANGELLISTE · LEJELOVENS § 91</span>
+  </div>
+
+  <header class="masthead reveal">
+    <div class="brand"><a href="../">Indflyt</a></div>
+    <p class="tagline">gratis fejl- og mangelliste — udfyld online, print eller gem som PDF</p>
+  </header>
+
+  <section class="hero reveal d1">
+    <h1>Lav din fejl- og mangelliste<br><em>på 5 minutter</em></h1>
+    <p class="sub">Flytter du ind i en lejebolig? Du har <strong>14 dage fra overtagelsen</strong> til at
+    melde fejl og mangler til din udlejer (lejelovens § 91). Udfyld listen herunder, og få et færdigt
+    dokument, du kan printe eller gemme som PDF og sende med det samme. Helt gratis — ingen oprettelse,
+    intet gemmes på nogen server.</p>
+  </section>
+
+  <section class="gen reveal d2" id="form">
+    <label for="f-adr">Lejemålets adresse</label>
+    <input id="f-adr" placeholder="Gadenavn 12, 2. th">
+    <div class="row2">
+      <div><label for="f-post">Postnr. og by</label><input id="f-post" placeholder="2200 København N"></div>
+      <div><label for="f-dato">Overtagelsesdato</label><input id="f-dato" type="date"></div>
+    </div>
+    <div class="row2">
+      <div><label for="f-lejer">Lejer (dit navn)</label><input id="f-lejer" placeholder="Dit navn"></div>
+      <div><label for="f-udlejer">Udlejer</label><input id="f-udlejer" placeholder="Udlejers navn (valgfrit)"></div>
+    </div>
+
+    <label style="margin-top:22px">Fejl og mangler</label>
+    <div id="defects"></div>
+    <button class="addbtn" type="button" onclick="addDefect()">+ Tilføj fejl/mangel</button>
+    <button class="genbtn" type="button" onclick="generate()">Lav mit dokument (print / gem som PDF)</button>
+    <p class="cta-note" style="margin-top:10px">Alt sker i din browser — vi ser eller gemmer intet.</p>
+  </section>
+
+  <section class="upsell reveal d3">
+    <h3>Vil du have fotos, tidsstempler og det hele samlet?</h3>
+    <p>Denne liste er tekst. <strong>Indflyt-appen</strong> (iOS, lanceres 1. august) guider dig gennem
+    hele lejemålet med dansk tjekliste, oversigts- og nærbilleder af hver fejl, målerstande og
+    SHA-256-fingeraftryk — samlet i én professionel PDF-rapport til udlejer.</p>
+    <a class="go" href="https://indflyt-door.oskargram1996.workers.dev/go?v=funnel&amp;price=99">Se appen — engangskøb 99 kr</a>
+  </section>
+
+  <section class="prose">
+    <div class="secthead"><h2>Reglerne, kort</h2><span class="no">§ 90–91</span></div>
+    <ul>
+      <li><strong>14-dages fristen (§ 91):</strong> fejl og mangler skal meldes skriftligt til udlejer
+      senest 2 uger efter lejeforholdets begyndelse — ellers kan du som udgangspunkt ikke påberåbe dig
+      dem senere. Gem dokumentation for, at du har sendt listen til tiden.</li>
+      <li><strong>Indflytningssyn (§ 90):</strong> udlejere med mere end ét lejemål skal holde syn og
+      udlevere en indflytningsrapport. Gør de ikke det, bortfalder deres almindelige istandsættelseskrav.
+      Private udlejere med ét lejemål har ingen synspligt — dér er din egen liste og dine egne billeder
+      den eneste dokumentation, der findes.</li>
+      <li><strong>Billeder:</strong> huslejenævnets behandling er skriftlig — dokumenter og billeder er
+      beviset. Tag oversigtsbilleder og nærbilleder af hver fejl på overtagelsesdagen, og send listen,
+      så datoen kan dokumenteres.</li>
+      <li><strong>Depositum:</strong> ved fraflytning er det udlejer, der skal bevise, at lejemålet er
+      afleveret i ringere stand end ved overtagelsen. Din dokumentation fra indflytningen er dit
+      sammenligningsgrundlag.</li>
+    </ul>
+    <p style="margin-top:14px"><em>Denne side er vejledning, ikke juridisk rådgivning. Konkrete tvister:
+    kontakt fx Lejernes LO eller en advokat.</em></p>
+  </section>
+
+  <footer class="colophon">
+    <a href="../">Forside</a>
+    <a href="../privacy/">Privatliv</a>
+    <a href="../support/">Support</a>
+  </footer>
+
+</div>
+
+<!-- printable document -->
+<div id="doc"></div>
+
+<script>
+const ROOMS = ["Entré","Stue","Værelse","Køkken","Badeværelse","Andet"];
+const SEVS = ["Kosmetisk","Funktionel","Alvorlig"];
+
+function addDefect(room, txt, sev) {
+  const wrap = document.createElement("div");
+  wrap.className = "defect";
+  wrap.innerHTML =
+    '<button class="rm" type="button" title="Fjern" onclick="this.parentNode.remove();save()">×</button>' +
+    '<div class="row2"><div><label>Rum</label><select class="d-room">' +
+    ROOMS.map(r => `<option${r===room?" selected":""}>${r}</option>`).join("") +
+    '</select></div><div><label>Alvorlighed</label><select class="d-sev">' +
+    SEVS.map(s => `<option${s===sev?" selected":""}>${s}</option>`).join("") +
+    "</select></div></div>" +
+    '<label>Beskrivelse</label><textarea class="d-txt" rows="2" placeholder="Fx: Dybe ridser i gulvet foran altandøren">' + (txt||"") + "</textarea>";
+  document.getElementById("defects").appendChild(wrap);
+}
+
+function collect() {
+  return {
+    adr: document.getElementById("f-adr").value.trim(),
+    post: document.getElementById("f-post").value.trim(),
+    dato: document.getElementById("f-dato").value,
+    lejer: document.getElementById("f-lejer").value.trim(),
+    udlejer: document.getElementById("f-udlejer").value.trim(),
+    defects: [...document.querySelectorAll(".defect")].map(d => ({
+      room: d.querySelector(".d-room").value,
+      sev: d.querySelector(".d-sev").value,
+      txt: d.querySelector(".d-txt").value.trim(),
+    })).filter(d => d.txt),
+  };
+}
+
+function save() { try { localStorage.setItem("fml", JSON.stringify(collect())); } catch(e){} }
+document.addEventListener("input", save);
+
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+function fmtDate(iso){ if(!iso) return "—"; const [y,m,d]=iso.split("-"); return `${+d}. ${["januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"][+m-1]} ${y}`; }
+
+function generate() {
+  const c = collect();
+  const today = new Date();
+  const todayStr = fmtDate(today.toISOString().slice(0,10));
+  let deadline = "";
+  if (c.dato) {
+    const dl = new Date(c.dato); dl.setDate(dl.getDate() + 14);
+    deadline = fmtDate(dl.toISOString().slice(0,10));
+  }
+  const items = c.defects.length
+    ? "<ol>" + c.defects.map(d => `<li><strong>${esc(d.room)}:</strong> ${esc(d.txt)} <span class="sev">(${esc(d.sev.toLowerCase())})</span></li>`).join("") + "</ol>"
+    : "<p>Der er ikke konstateret fejl eller mangler ved overtagelsen.</p>";
+
+  document.getElementById("doc").innerHTML =
+    `<h1>FEJL- OG MANGELLISTE</h1>
+     <p>jf. lejelovens § 91 — fremsendes til udlejer senest 2 uger efter lejeforholdets begyndelse${deadline ? " (frist: " + deadline + ")" : ""}.</p>
+     <div class="meta">
+       <div><span>Lejemål</span><strong>${esc(c.adr)}${c.post ? ", " + esc(c.post) : ""}</strong></div>
+       <div><span>Overtagelsesdato</span><strong>${fmtDate(c.dato)}</strong></div>
+       ${c.lejer ? `<div><span>Lejer</span><strong>${esc(c.lejer)}</strong></div>` : ""}
+       ${c.udlejer ? `<div><span>Udlejer</span><strong>${esc(c.udlejer)}</strong></div>` : ""}
+       <div><span>Dato for denne liste</span><strong>${todayStr}</strong></div>
+     </div>
+     <p>Følgende fejl og mangler er konstateret ved overtagelsen af lejemålet. Listen fremsendes som
+     dokumentation af lejemålets stand ved indflytning og er ikke udtryk for krav om udbedring,
+     medmindre andet er angivet.</p>
+     ${items}
+     <div class="sig"><div>Dato og lejers underskrift</div><div>Modtaget af udlejer (dato)</div></div>
+     <div class="foot">Udarbejdet med det gratis værktøj på indflyt — send listen til din udlejer i dag,
+     og gem en kopi til dig selv. Fotodokumentation med tidsstempler: Indflyt-appen (App Store, august 2026).</div>`;
+  window.print();
+}
+
+// restore previous session
+try {
+  const s = JSON.parse(localStorage.getItem("fml") || "null");
+  if (s) {
+    document.getElementById("f-adr").value = s.adr || "";
+    document.getElementById("f-post").value = s.post || "";
+    document.getElementById("f-dato").value = s.dato || "";
+    document.getElementById("f-lejer").value = s.lejer || "";
+    document.getElementById("f-udlejer").value = s.udlejer || "";
+    (s.defects || []).forEach(d => addDefect(d.room, d.txt, d.sev));
+  }
+} catch(e){}
+if (!document.querySelector(".defect")) addDefect();
+
+// channel measurement: page views under the dedicated "funnel" variant
+fetch("https://indflyt-door.oskargram1996.workers.dev/hit?v=funnel", {mode:"no-cors"});
+</script>
+</body>
+</html>
