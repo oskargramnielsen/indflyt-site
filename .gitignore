@@ -1,1 +1,3 @@
 door-worker/.stats-key.local
+door-worker/.wrangler/
+node_modules/
