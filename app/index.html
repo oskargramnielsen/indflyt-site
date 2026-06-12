@@ -46,6 +46,13 @@
   .deadline strong { font-family:var(--serif); font-size:18px; }
   .crumb { font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--faint); margin:10px 0; text-transform:uppercase; }
   .crumb a { color:var(--blue); cursor:pointer; text-decoration:underline; }
+  .suggest { position:absolute; top:100%; left:0; right:0; z-index:9; background:#fff;
+             border:1.5px solid var(--hairline); border-top:none; border-radius:0 0 4px 4px;
+             max-height:260px; overflow-y:auto; box-shadow:0 6px 14px rgba(27,42,65,.12); }
+  .suggest div { padding:11px 12px; cursor:pointer; border-bottom:1px solid var(--ghost); font-size:15px; }
+  .suggest div:hover { background:var(--paper); }
+  .roomcard.addroom { border-style:dashed; color:var(--blue); background:none; text-align:center; }
+  .item .toggle { font-size:11px; }
   #doc { display:none; }
   @media print {
     body > .shell { display:none !important; }

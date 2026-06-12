@@ -86,7 +86,11 @@ async function processFile(file) {
 
 // ---------- state ----------
 let S = null;
-function load() { try { S = JSON.parse(localStorage.getItem(STATE_KEY) || "null"); } catch(e) { S = null; } }
+function load() {
+  try { S = JSON.parse(localStorage.getItem(STATE_KEY) || "null"); } catch(e) { S = null; }
+  // migrate states saved before item-level notes/photos existed
+  if (S) S.rooms.forEach(r => r.items.forEach(i => { i.note ??= ""; i.photos ??= []; }));
+}
 function save() { localStorage.setItem(STATE_KEY, JSON.stringify(S)); }
 function newInspection(f) {
   S = {
@@ -95,15 +99,23 @@ function newInspection(f) {
     takeoverDate: f.takeoverDate, tenantName: f.tenantName, landlordName: f.landlordName,
     rooms: DEFAULT_ROOMS.map(r => ({
       id: uid(), name: r.name, sym: r.sym, note: "",
-      items: BASE_ITEMS.concat(r.extras).map(t => ({ id: uid(), title: t, condition: "notChecked", defects: [] })),
+      items: BASE_ITEMS.concat(r.extras).map(t => makeItem(t)),
     })),
     meters: METER_TYPES.map(t => ({ id: uid(), type: t, value: "", readAt: null, photoId: null })),
     anchor: null,
   };
   save();
 }
+const makeItem = title => ({ id: uid(), title, condition: "notChecked", note: "", photos: [], defects: [] });
+const makeRoom = (name, sym = "🏠", extras = []) => ({
+  id: uid(), name, sym, note: "",
+  items: BASE_ITEMS.concat(extras).map(t => makeItem(t)),
+});
 const allDefects = () => S.rooms.flatMap(r => r.items.flatMap(i => i.defects.map(d => ({ ...d, room: r.name, item: i.title }))));
-const allPhotoIds = () => allDefects().flatMap(d => d.photos).concat(S.meters.map(m => m.photoId).filter(Boolean));
+const allPhotoIds = () => S.rooms.flatMap(r => r.items.flatMap(i => i.photos))
+  .concat(allDefects().flatMap(d => d.photos))
+  .concat(S.meters.map(m => m.photoId).filter(Boolean));
+const roomPhotoIds = r => r.items.flatMap(i => i.photos.concat(i.defects.flatMap(d => d.photos)));
 
 // ---------- routing / render ----------
 let route = { screen: "start" };
@@ -135,7 +147,12 @@ function renderSetup() {
   view.innerHTML = `
     <div class="crumb">NY GENNEMGANG</div>
     <div class="card">
-      <label class="f">Lejemålets adresse</label><input id="adr" placeholder="Gadenavn 12, 2. th">
+      <label class="f">Lejemålets adresse</label>
+      <div style="position:relative">
+        <input id="adr" placeholder="Begynd at skrive din adresse…" autocomplete="off">
+        <div id="suggest" class="suggest"></div>
+      </div>
+      <p class="small" style="margin-top:4px">Forslag fra Danmarks Adresseregister (DAWA).</p>
       <div class="row2">
         <div><label class="f">Postnr. og by</label><input id="post" placeholder="2200 København N"></div>
         <div><label class="f">Overtagelsesdato</label><input id="dato" type="date"></div>
@@ -147,6 +164,43 @@ function renderSetup() {
       <p class="small" style="margin-top:10px">Overtagelsesdatoen starter 14-dages fristen for din fejl- og mangelliste.</p>
       <button class="btn" id="create">Opret gennemgang</button>
     </div>`;
+
+  // DAWA autocomplete: free public Danish address API, query goes to
+  // api.dataforsyningen.dk (noted on the privacy page); nothing is stored.
+  const adr = document.getElementById("adr");
+  const post = document.getElementById("post");
+  const sug = document.getElementById("suggest");
+  let timer;
+  const query = async () => {
+    const q = adr.value.trim();
+    if (q.length < 2) { sug.innerHTML = ""; return; }
+    try {
+      const r = await fetch(`https://api.dataforsyningen.dk/autocomplete?q=${encodeURIComponent(q)}&fuzzy=`);
+      const items = await r.json();
+      sug.innerHTML = "";
+      items.slice(0, 8).forEach(it => {
+        const d = document.createElement("div");
+        d.textContent = it.tekst;
+        d.onmousedown = e => { // mousedown so it wins over input blur
+          e.preventDefault();
+          if (it.type === "adresse") {
+            const a = it.data;
+            adr.value = `${a.vejnavn} ${a.husnr}${a.etage ? `, ${a.etage}.` : ""}${a.dør ? ` ${a.dør}` : ""}`;
+            post.value = `${a.postnr} ${a.postnrnavn}`;
+            sug.innerHTML = "";
+          } else {
+            adr.value = it.tekst;
+            adr.focus();
+            query();
+          }
+        };
+        sug.appendChild(d);
+      });
+    } catch(e) { sug.innerHTML = ""; }
+  };
+  adr.oninput = () => { clearTimeout(timer); timer = setTimeout(query, 250); };
+  adr.onblur = () => setTimeout(() => { sug.innerHTML = ""; }, 200);
+
   document.getElementById("create").onclick = () => {
     const adr = document.getElementById("adr").value.trim();
     if (!adr) { document.getElementById("adr").focus(); return; }
@@ -179,11 +233,18 @@ function renderOverview() {
       return `<div class="roomcard" data-r="${r.id}"><span class="ring">${done}/${r.items.length}</span>
         <div>${r.sym}</div><h4>${esc(r.name)}</h4>
         <div class="sub">${dc ? `⚠️ ${dc} fejl` : `${r.items.length} punkter`}</div></div>`;
-    }).join("")}</div>
+    }).join("")}<div class="roomcard addroom" id="addroom"><div style="font-size:22px">＋</div><h4>Tilføj rum</h4>
+      <div class="sub">fx Værelse 2, Altan, Kælder</div></div></div>
     <div class="card" id="metercard" style="cursor:pointer"><h3>Målerstande</h3>
       <p class="small">${S.meters.filter(m => m.value).length} af ${S.meters.length} aflæst — husk foto af hver måler</p></div>
     <button class="btn" id="report">Se rapport (${defects} fejl · ${allPhotoIds().length} fotos)</button>`;
-  view.querySelectorAll(".roomcard").forEach(el => el.onclick = () => go({ screen: "room", roomId: el.dataset.r }));
+  view.querySelectorAll(".roomcard[data-r]").forEach(el => el.onclick = () => go({ screen: "room", roomId: el.dataset.r }));
+  document.getElementById("addroom").onclick = () => {
+    const name = (prompt("Hvad hedder rummet? (fx Værelse 2, Altan, Kælder)") || "").trim();
+    if (!name) return;
+    S.rooms.push(makeRoom(name));
+    save(); render();
+  };
   document.getElementById("metercard").onclick = () => go({ screen: "meters" });
   document.getElementById("report").onclick = () => go({ screen: "report" });
   document.getElementById("ics").onclick = downloadICS;
@@ -193,29 +254,96 @@ function renderRoom() {
   const room = S.rooms.find(r => r.id === route.roomId);
   if (!room) return go({ screen: "overview" });
   view.innerHTML = `
-    <div class="crumb"><a id="back">← Oversigt</a> · ${esc(room.name)}</div>
-    <p class="small">Tryk på cirklen: ○ ikke gennemgået → ✅ OK → ⚠️ fejl → ➖ ikke relevant</p>
+    <div class="crumb"><a id="back">← Oversigt</a> · ${esc(room.name)}
+      <span style="float:right"><a id="rename">OMDØB</a> · <a id="delroom" style="color:var(--stamp)">SLET RUM</a></span></div>
+    <p class="small">Tryk på cirklen: ○ ikke gennemgået → ✅ OK → ⚠️ fejl → ➖ ikke relevant.
+    "Note & fotos" på hvert punkt dokumenterer også det, der er i orden (fx hvidevarers serienummer).</p>
     <div id="items"></div>
+    <a class="addphoto" id="additem">＋ TILFØJ PUNKT TIL TJEKLISTEN</a>
     <div class="card"><label class="f">Note til rummet (valgfri)</label>
       <textarea id="note" rows="2">${esc(room.note)}</textarea></div>`;
   document.getElementById("back").onclick = () => go({ screen: "overview" });
   document.getElementById("note").oninput = e => { room.note = e.target.value; save(); };
+  document.getElementById("rename").onclick = () => {
+    const name = (prompt("Nyt navn til rummet:", room.name) || "").trim();
+    if (name) { room.name = name; save(); render(); }
+  };
+  document.getElementById("delroom").onclick = () => {
+    if (!confirm(`Slet "${room.name}" med alle punkter og fotos?`)) return;
+    roomPhotoIds(room).forEach(delPhoto);
+    S.rooms = S.rooms.filter(r => r.id !== room.id);
+    save(); go({ screen: "overview" });
+  };
+  document.getElementById("additem").onclick = () => {
+    const title = (prompt("Hvad skal punktet hedde? (fx Altandør, Indbygget skab)") || "").trim();
+    if (!title) return;
+    room.items.push(makeItem(title));
+    save(); render();
+  };
   const wrap = document.getElementById("items");
   room.items.forEach(item => wrap.appendChild(itemRow(room, item)));
 }
+
+const expandedItems = new Set();
 
 function itemRow(room, item) {
   const el = document.createElement("div");
   el.className = "item";
   const draw = () => {
-    el.innerHTML = `<div class="head"><span>${esc(item.title)}</span>
+    const extras = (item.note ? "📝" : "") + (item.photos.length ? ` 📷${item.photos.length}` : "");
+    el.innerHTML = `<div class="head"><span>${esc(item.title)} <small style="color:var(--faint)">${extras}</small></span>
       <button class="cond" title="${COND_LABEL[item.condition]}">${COND_SYM[item.condition]}</button></div>
+      <a class="addphoto toggle">${expandedItems.has(item.id) ? "− SKJUL" : "＋ NOTE & FOTOS"}</a>
+      <div class="details"></div>
       <div class="dlist"></div>`;
     el.querySelector(".cond").onclick = () => {
       item.condition = CONDITIONS[(CONDITIONS.indexOf(item.condition)+1) % 4];
       if (item.condition === "defect" && !item.defects.length) item.defects.push({ id: uid(), text:"", severity:"Funktionel", photos:[], createdAt:new Date().toISOString() });
       save(); draw();
     };
+    el.querySelector(".toggle").onclick = () => {
+      expandedItems.has(item.id) ? expandedItems.delete(item.id) : expandedItems.add(item.id);
+      draw();
+    };
+
+    // item-level documentation: note + photos for the things that are fine too
+    if (expandedItems.has(item.id)) {
+      const det = el.querySelector(".details");
+      det.className = "details defectbox";
+      det.innerHTML = `
+        <textarea rows="2" placeholder="Note til punktet (fx mærke og serienr.)…">${esc(item.note)}</textarea>
+        <label class="addphoto">📷 TILFØJ FOTOS
+          <input type="file" accept="image/*" capture="environment" multiple></label>
+        <div class="thumbs"></div>
+        <a class="addphoto rmitem" style="color:var(--stamp)">FJERN PUNKTET FRA TJEKLISTEN</a>`;
+      det.querySelector("textarea").oninput = e => { item.note = e.target.value; save(); };
+      det.querySelector("input[type=file]").onchange = async e => {
+        for (const f of e.target.files) item.photos.push(await processFile(f));
+        save(); drawItemThumbs();
+      };
+      det.querySelector(".rmitem").onclick = () => {
+        const hasContent = item.note || item.photos.length || item.defects.length;
+        if (hasContent && !confirm(`Fjern "${item.title}" med note, fotos og fejl?`)) return;
+        item.photos.concat(item.defects.flatMap(d => d.photos)).forEach(delPhoto);
+        room.items = room.items.filter(i => i.id !== item.id);
+        save(); render();
+      };
+      const drawItemThumbs = async () => {
+        const t = det.querySelector(".thumbs");
+        t.innerHTML = "";
+        for (const pid of item.photos) {
+          const url = await photoURL(pid);
+          if (!url) continue;
+          const w = document.createElement("div");
+          w.className = "t";
+          w.innerHTML = `<img src="${url}" alt=""><button class="x">×</button>`;
+          w.querySelector(".x").onclick = () => { delPhoto(pid); item.photos = item.photos.filter(p => p !== pid); save(); drawItemThumbs(); };
+          t.appendChild(w);
+        }
+      };
+      drawItemThumbs();
+    }
+
     const dl = el.querySelector(".dlist");
     if (item.condition === "defect") {
       item.defects.forEach(d => dl.appendChild(defectBox(item, d, draw)));
@@ -370,9 +498,15 @@ async function generateReport() {
     roomsHtml += `<h2>${esc(r.name)}</h2><table>${r.items.map(i =>
       `<tr><td>${esc(i.title)}</td><td>${COND_LABEL[i.condition]}</td></tr>`).join("")}</table>`;
     if (r.note) roomsHtml += `<p style="font-size:10pt;font-style:italic">Note: ${esc(r.note)}</p>`;
-    for (const i of r.items) for (const d of i.defects) {
-      roomsHtml += `<p style="font-size:10.5pt;margin-top:8pt"><strong>${esc(i.title)} — ${esc(d.severity)}:</strong> ${esc(d.text)}</p>`;
-      roomsHtml += await photoBlock(d.photos, "Foto");
+    for (const i of r.items) {
+      if (i.note || i.photos.length) {
+        if (i.note) roomsHtml += `<p style="font-size:10.5pt;margin-top:8pt"><strong>${esc(i.title)}:</strong> ${esc(i.note)}</p>`;
+        roomsHtml += await photoBlock(i.photos, esc(i.title));
+      }
+      for (const d of i.defects) {
+        roomsHtml += `<p style="font-size:10.5pt;margin-top:8pt"><strong>${esc(i.title)} — ${esc(d.severity)}:</strong> ${esc(d.text)}</p>`;
+        roomsHtml += await photoBlock(d.photos, "Foto");
+      }
     }
   }
 
