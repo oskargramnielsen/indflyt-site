@@ -51,8 +51,8 @@
     </div>
 
     <!-- THE measured event (test I-A2): click on this button = pay-click.
-         TALLY: opret formularen og erstat REPLACE. Skjult felt "price" er udfyldt. -->
-    <a class="cta" href="https://tally.so/r/REPLACE?price=99" id="paycta">Generér din rapport
+         Measured by the indflyt-door worker (door-worker/), no Tally needed. -->
+    <a class="cta" href="https://indflyt-door.oskargram1996.workers.dev/go?v=a&amp;price=99" id="paycta">Generér din rapport
       <span class="price">ENGANGSKØB · 99 KR</span></a>
     <p class="cta-note">Lanceres 1. august — skriv dig op, og launch-prisen er låst til dig.</p>
   </section>
@@ -64,5 +64,6 @@
   </footer>
 
 </div>
+<script>fetch('https://indflyt-door.oskargram1996.workers.dev/hit?v=a',{mode:'no-cors'});</script>
 </body>
 </html>

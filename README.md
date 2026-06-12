@@ -30,9 +30,16 @@ the URLs match `AppConfig.swift` in the app repo (`/privacy/`, `/support/`).
 ## Test I-A2 readout (playbook)
 
 Measured event = click on the CTA ("pay-click"). **Green: ≥8 % visitors→pay-click** on either
-price. Cloudflare Analytics gives visitors per path; Tally gives form opens + submissions per
-price. Run ~10 days off one honest post in a large lejer-Facebook-group (read group rules,
-post as a person). Record the result in the app repo's DECISIONS.md — it sets launch pricing.
+price. Measurement is self-hosted (no Tally/analytics needed for the Indflyt doors): the
+`door-worker/` Cloudflare Worker (live at `indflyt-door.oskargram1996.workers.dev`) counts
+page views (beacon), pay-clicks, and stores launch-list emails in KV. Readout:
+`https://indflyt-door.oskargram1996.workers.dev/stats?key=<STATS_KEY>` — the key is in
+`door-worker/.stats-key.local` (gitignored). Deploy changes with `npx wrangler deploy`
+from `door-worker/`. Run ~10 days off one honest post in a large lejer-Facebook-group
+(read group rules, post as a person; post draft in the app repo's
+`appstore/validation.md`). Record the result in the app repo's DECISIONS.md — it sets
+launch pricing. Note: the `e:*:test:*` KV events are deploy smoke-tests; the a/b counters
+start at zero.
 
 ## Test F1-A2 readout (Hostbook — the host-manual builder)
 

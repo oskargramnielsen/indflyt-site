@@ -1,0 +1,7 @@
+name = "indflyt-door"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+[[kv_namespaces]]
+binding = "DOOR"
+id = "955b7911812e4442b763bb09755c61d7"
